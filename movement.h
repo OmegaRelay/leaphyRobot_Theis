@@ -2,7 +2,7 @@
  * Movement driver is to modularize leaphy movements
  * 
  */
- #include<arduino.h>
+#include<arduino.h>
 
 /*********** Definitions ***********/
 
@@ -40,7 +40,7 @@ typedef enum {
   * @param dir a direction_t type indicating direction to turn
   * @param angle a 16-bit variale for how much to turn in degrees
   */
-void movementTurn45(turn_t dir);
+bool movementTurn45(turn_t dir);
 
 /**
  * 

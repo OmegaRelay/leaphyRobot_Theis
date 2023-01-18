@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "movement.h"
 
 
@@ -16,20 +17,16 @@ void loop() {
   int ldrLeftValue = analogRead(A2);
   int ldrRightValue = analogRead(A3);
   // print out the value you read:
-//  Serial.print(trackLeftValue);
-  // Serial.print(",");
-//  Serial.print(trackRightValue);
-  // Serial.print(",");
-  // Serial.print(ldrLeftValue);
-  // Serial.print(",");
-  // Serial.println(ldrRightValue);
-  movementTurn45(TURN_LEFT);
-  
-  delay(1000);  // delay in between reads for stability
-}
+  Serial.print(trackLeftValue);
+  Serial.print(",");
+  Serial.print(trackRightValue);
+  Serial.print(",");
+  Serial.print(ldrLeftValue);
+  Serial.print(",");
+  Serial.println(ldrRightValue);
+  // if (!movementTurn45(TURN_LEFT)){
+  //   Serial.println("Turn direction invalid");
+  // };
 
-//void error(string err_msg){
-//  Serial.println (err_msg);
-//  Serial.flush ();
-//  exit (1);
-//}
+  delay(300);  // delay in between reads for stability
+}
