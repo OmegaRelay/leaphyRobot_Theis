@@ -27,7 +27,6 @@ typedef enum {
 } trigger_t;
 
 
-
 /*********** Functions Prototypes ************/
 
 /**

@@ -24,6 +24,7 @@ void loop() {
   // Serial.print(",");
   // Serial.println(ldrRightValue);
   movementTurn45(TURN_LEFT);
+  
   delay(1000);  // delay in between reads for stability
 }
 
