@@ -5,12 +5,6 @@
 #include<arduino.h>
 
 /*********** Definitions ***********/
-
-#define MOTOR_LEFT_DIR_PIN 12
-#define MOTOR_RIGHT_DIR_PIN 13
-#define MOTOR_LEFT_PWM_PIN 10
-#define MOTOR_RIGHT_PWM_PIN 11
-
 #define FORWARD HIGH
 #define BACKWARD LOW
 #define MAX_MOTOR_SPEED 255
@@ -27,12 +21,23 @@ typedef enum {
 } trigger_t;
 
 
-/*********** Functions Prototypes ************/
+/****** Public Functions APIs ******/
+/**
+ * @brief motorStop() stops the movement
+ */
+void movementStop();
+
+void movementSpin();
+
+/**
+ * @brief motorForwardSpeed() moves the robot forward at speed
+ */
+void movementForwardSpeed(unsigned short speed);
 
 /**
  * @brief motorForwardUntil() moves the robot forward until a trigger
  */
- void movementForwardUntil(trigger_t trigger);
+void movementForwardUntil(trigger_t trigger);
 
  /**
   * @brief motorturn() drives the wheel motors in opposite directions to turn the robot
@@ -45,4 +50,9 @@ bool movementTurn45(turn_t dir);
 /**
  * 
  */
- void movementReverse();
+void movementReverse();
+
+/**
+ * 
+ */
+bool movementTurn(turn_t dir);

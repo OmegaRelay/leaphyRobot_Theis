@@ -1,32 +1,37 @@
-#include <stdio.h>
-#include "movement.h"
+#include <Arduino_FreeRTOS.h>
+#include <Arduino.h>
 
+#include "leaphy_main.h"
+#include "leaphy_sensor.h"
+#include "leaphy_board.h"
 
-// the setup routine runs once when you press reset:
 void setup() {
-  // initialize serial communication at 9600 bits per second:
-  Serial.begin(115200);
-  Serial.println("Tracker_Left, Tracker_Right, LDR_Left, LDR_Right");
+
+  Serial.begin(9600);
+  Serial.println(F("Initializing board"));
+
+  //initialize the board and pins
+  board_init();
+
+  /* Create two tasks with priorities 1 and 2. An idle task is also created, 
+     which will be run when there are no tasks in RUN state */
+
+  xTaskCreate(detectionTask, "detectionTask", 100, NULL, 1, NULL);
+  xTaskCreate(mainTask, "mainTask", 300, NULL, 1, NULL);
+  xTaskCreate(MyIdleTask, "IdleTask", 100, NULL, 0, NULL);  //todo do i need this?
 }
 
-// the loop routine runs over and over again forever:
-void loop() {
-  // read the input on analog pin 0:
-  int trackLeftValue = analogRead(A0);
-  int trackRightValue = analogRead(A1);
-  int ldrLeftValue = analogRead(A2);
-  int ldrRightValue = analogRead(A3);
-  // print out the value you read:
-  Serial.print(trackLeftValue);
-  Serial.print(",");
-  Serial.print(trackRightValue);
-  Serial.print(",");
-  Serial.print(ldrLeftValue);
-  Serial.print(",");
-  Serial.println(ldrRightValue);
-  // if (!movementTurn45(TURN_LEFT)){
-  //   Serial.println("Turn direction invalid");
-  // };
 
-  delay(300);  // delay in between reads for stability
+void loop() {
+  // DO nothing
+}
+
+
+
+/* Idle Task with priority Zero */
+static void MyIdleTask(void* pvParameters) {
+  while (1) {
+    //Serial.println(F("Idle state"));
+    //delay(50);
+  }
 }
