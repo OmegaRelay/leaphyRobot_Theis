@@ -1,4 +1,4 @@
-#define DEBUG_MESSAGES
+#define xDEBUG_MESSAGES
 
 #ifdef DEBUG_MESSAGES
   #define DEBUG_PRINT(...)    Serial.print(__VA_ARGS__)
