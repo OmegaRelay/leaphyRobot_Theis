@@ -48,11 +48,8 @@ void lineDetectionTask(void* pvParameters) {
 }
 
 
-
-
-
 unsigned short sensor_obstacleDetected() {
-  if (distanceVal > 20)
+  if (distanceVal > 25)
     return OBSTACLE_NONE;
   if (distanceVal > 15)
     return OBSTACLE_CLOSE;
