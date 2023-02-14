@@ -13,19 +13,25 @@
 #define OBSTACLE_CLOSE      1
 #define OBSTACLE_VERY_CLOSE 2
 
-#define LINE_TRACK_RIGHT  1
-#define LINE_TRACK_LEFT   2
+// #define LINE_TRACK_RIGHT  1
+// #define LINE_TRACK_LEFT   2
 
-#define TRACK_BOTH_BLACK  0
-#define TRACK_RIGHT_BLACK 1
-#define TRACK_LEFT_BLACK  2
-#define TRACK_BOTH_WHITE  3
+#define TRACK_BOTH_BLACK  3
+#define TRACK_LEFT_BLACK 1
+#define TRACK_RIGHT_BLACK  2
+#define TRACK_BOTH_WHITE  0
+
+#define NO_GUIDANCE 0
+#define LEFT_GUIDANCE 1
+#define RIGHT_GUIDANCE 2
 
 
 /************ Typedefs *************/
 /****** Public Functions APIs ******/
 
-void detectionTask(void* pvParameters);
+void obstacleDetectionTask(void* pvParameters);
+
+void lineDetectionTask(void* pvParameters);
 
 unsigned short sensor_obstacleDetected();
 
@@ -39,11 +45,10 @@ unsigned short sensor_getLdrValue(bool side);
 
 /**
  * @brief compares the values of the two LDRs
- * @param sensitivityRange the 16 bit range to check either side of the ldr value
  *
  * @return 0 if the within the sensitivity range, 1 if not 
  */
-unsigned int sensor_compareLdrValues(unsigned short sensitivityRange);
+unsigned short sensor_getLdrRelativeStatus();
 
 /**
  * @brief gets the status of the line tracker

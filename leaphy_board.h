@@ -28,6 +28,9 @@
 #define MOTOR_LEFT_DIR_PIN    12
 #define MOTOR_RIGHT_DIR_PIN   13
 
+#define HIGH 1
+#define LOW 0
+
 #define ANALOG  0
 #define DIGITAL 1
 

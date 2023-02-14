@@ -3,50 +3,86 @@
 #include "leaphy_main.h"
 #include "leaphy_sensor.h"
 #include "leaphy_movement.h"
+#include "leaphy_notify.h"
+
+#include "DEBUG.h"
+
+#define MAIN_TIME_PERIOD 30
 
 void mainTask(void* pvParameters) {
+
+  static unsigned short trackStatus = 0;
+  static unsigned short obstacleDetected = 0;
+  static unsigned short ldrRelativeStatus = 0;
+
   while (1) {
 
-    static bool obstacleDetected = sensor_obstacleDetected();
+    obstacleDetected = sensor_obstacleDetected();
 
-    static unsigned short trackStatus = sensor_getLineStatus();
+    trackStatus = sensor_getLineStatus();
 
-    switch (obstacleDetected) {
-      case OBSTACLE_NONE:
-        switch (trackStatus){
+    ldrRelativeStatus = sensor_getLdrRelativeStatus();
+
+    switch (ldrRelativeStatus) {
+      case NO_GUIDANCE:
+        switch (trackStatus) {
+          case TRACK_BOTH_WHITE:
+            switch (obstacleDetected) {
+              case OBSTACLE_NONE:
+                notifyGreen();
+                movementForwardSpeed(SPEED_FAST);
+                break;
+              case OBSTACLE_CLOSE:
+                notifyYellow();
+                movementForwardSpeed(SPEED_SLOW);
+                break;
+
+              case OBSTACLE_VERY_CLOSE:
+                notifyRed();
+                movementStop();
+                break;
+
+              default:
+                notifyRed();
+                movementStop();
+                break;
+            }
+            break;
+
           case TRACK_BOTH_BLACK:
+            notifyPurple();
             movementStop();
             break;
 
           case TRACK_RIGHT_BLACK:
-            movementTurn(TURN_LEFT);
+            notifyBlue();
+            movementTurn(MOVE_RIGHT);
             break;
 
           case TRACK_LEFT_BLACK:
-            movementTurn(TURN_RIGHT);
-            break;
-          case TRACK_BOTH_WHITE:
-            movementForwardSpeed(100);
+            notifyBlue();
+            movementTurn(MOVE_LEFT);
             break;
 
           default:
-            movementTurn(TURN_LEFT);
+            movementStop();
             break;
         }
         break;
-      case OBSTACLE_CLOSE:
-        // movementStop();
-        // vTaskDelay(100 / portTICK_PERIOD_MS);
-        // movementTurn45(TURN_LEFT);
-        // vTaskDelay(100 / portTICK_PERIOD_MS);
-        // movementTurn45(TURN_LEFT);
+      case LEFT_GUIDANCE:
+        notifyYellow();
+        movementTurn(MOVE_LEFT);
         break;
 
-      case OBSTACLE_VERY_CLOSE:
+      case RIGHT_GUIDANCE:
+        notifyYellow();
+        movementTurn(MOVE_RIGHT);
+        break;
       default:
-        movementTurn(TURN_LEFT);
+        movementStop();
         break;
     }
-    vTaskDelay(60 / portTICK_PERIOD_MS);
+
+    vTaskDelay(MAIN_TIME_PERIOD / portTICK_PERIOD_MS);
   }
 }

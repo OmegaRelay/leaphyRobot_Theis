@@ -57,11 +57,3 @@ bool board_setPin(bool type, uint8_t pin, int value){
   }
   return 1;
 }
-
-bool board_setLeds(bool red, bool green, bool blue){
-  digitalWrite(RED_LED_PIN, (uint8_t) red);
-  digitalWrite(GREEN_LED_PIN, (uint8_t) green);
-  digitalWrite(BLUE_LED_PIN, (uint8_t) blue);
-
-  return 0;
-}

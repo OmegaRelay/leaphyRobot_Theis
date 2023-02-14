@@ -5,49 +5,51 @@
 #include <HCSR04.h>
 #include "leaphy_board.h"
 
+#include "DEBUG.h"
+
+#define OBSTACLE_TIME_PERIOD 60
+#define LINE_TIME_PERIOD 15
+
+//the value between 0 and 511 setting the range for the LDR comparison
+#define LDR_TOLERANCE 500
+
+#if LDR_TOLERANCE > 511 || LDR_TOLERANCE <= 0
+#error ldr tolerence out of range please please choose a value between 0 and 511 
+#endif
+
 
 /********* Local Variables *********/
 static unsigned long distanceVal = 0;
-static bool leftLineStatus = 0;
-static bool rightLineStatus = 0;
+static unsigned short lineStatus = 0;
+static unsigned short ldrRelativeStatus = 0;
 
 /**** Local Function Prototypes ****/
-void sensor_updateDistance(HCSR04 *instance);
 void sensor_updateLineStatus();
+void sensor_updateLdrStatus();
 
 /******** Public Functions *********/
-void detectionTask(void* pvParameters) {
+void obstacleDetectionTask(void* pvParameters) {
   HCSR04 hc(US_TRIG_PIN, US_ECHO_PIN);
-  static bool redState = 0;
-  static bool greenState = 0;
-  static bool blueState = 0;
-
 
   while (1) {
-
-    //line following
-
-    if (distanceVal < 20) {
-      if (distanceVal < 10) {
-        redState = 1;
-        greenState = 0;
-        blueState = 0;
-      } else {
-        redState = 1;
-        greenState = 1;
-        blueState = 0;
-      }
-    } else {
-      redState = 0;
-      greenState = 1;
-      blueState = 0;
-    }
-    board_setLeds(redState, greenState, blueState);
-    sensor_updateDistance(&hc);
-    sensor_updateLineStatus();
-    vTaskDelay(60 / portTICK_PERIOD_MS);
+    //update ultrasonic sensor
+    distanceVal = hc.dist();
+    vTaskDelay(OBSTACLE_TIME_PERIOD / portTICK_PERIOD_MS);
   }
 }
+
+void lineDetectionTask(void* pvParameters) {
+  while (1) {
+    //update line sensor
+    sensor_updateLineStatus();
+    sensor_updateLdrStatus();
+    vTaskDelay(LINE_TIME_PERIOD  / portTICK_PERIOD_MS);
+  }
+}
+
+
+
+
 
 unsigned short sensor_obstacleDetected() {
   if (distanceVal > 20)
@@ -67,43 +69,40 @@ unsigned short sensor_getLdrValue(bool side) {
   return ldrValue;
 }
 
-unsigned int sensor_compareLdrValues(unsigned short sensitivityRange) {
-  int ldrLeftValue = board_getPinValue(ANALOG, LDR_LEFT_PIN);
-  int ldrRightValue = board_getPinValue(ANALOG, LDR_RIGHT_PIN);
-  unsigned short halfRange = sensitivityRange / 2;
-
-
-  if (ldrLeftValue <= (ldrRightValue + halfRange) && ldrLeftValue >= (ldrRightValue - halfRange)) {
-    return SUCCESS;
-  }
-  return FAIL;
+unsigned short sensor_getLdrRelativeStatus() {
+  return ldrRelativeStatus;
 }
 
 unsigned short sensor_getLineStatus(){
-    unsigned short retVal = (leftLineStatus<<1);
-    retVal |= rightLineStatus;
-    Serial.println(retVal);
-    return retVal;
+    return lineStatus;
 }
 
 /********* Local Functions *********/
-void sensor_updateDistance(HCSR04 *instance) {
-  distanceVal = instance->dist();
-}
 
 void sensor_updateLineStatus(){
   int rightTrackVal = board_getPinValue(ANALOG, TRACKSENSE_RIGHT_PIN);
   int leftTrackVal = board_getPinValue(ANALOG, TRACKSENSE_LEFT_PIN);
 
-  // Serial.print(rightTrackVal);
-  // Serial.print(F("\t"));
-  // Serial.println(leftTrackVal);
-
-  rightLineStatus = 0;
-  leftLineStatus = 0;
-
   if (rightTrackVal <= 500) //black surface
-    rightLineStatus = 1;
+    lineStatus |= 1;
+  else 
+    lineStatus &= 2;
   if (leftTrackVal <= 500)
-    leftLineStatus = 1;
+    lineStatus |= 2;
+  else 
+    lineStatus &= 1;
+}
+
+void sensor_updateLdrStatus(){
+  int ldrLeftValue = board_getPinValue(ANALOG, LDR_LEFT_PIN);
+  int ldrRightValue = board_getPinValue(ANALOG, LDR_RIGHT_PIN);
+
+
+  if (ldrLeftValue >= (ldrRightValue + LDR_TOLERANCE))
+    ldrRelativeStatus = 2;
+  else if (ldrLeftValue <= (ldrRightValue - LDR_TOLERANCE))
+    ldrRelativeStatus = 1;
+  else 
+    ldrRelativeStatus = 0;
+  DEBUG_PRINTLN(ldrRelativeStatus);
 }
