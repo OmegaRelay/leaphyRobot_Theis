@@ -9,3 +9,5 @@ void notifyYellow();
 void notifyRed();
 
 void notifyPurple();
+
+void notifyNone();

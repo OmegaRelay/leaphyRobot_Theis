@@ -32,3 +32,9 @@ void notifyPurple(){
   board_setPin(DIGITAL, GREEN_LED_PIN, LOW);
   board_setPin(ANALOG, BLUE_LED_PIN, 63);
 }
+
+void notifyNone(){
+  board_setPin(DIGITAL, RED_LED_PIN, LOW);
+  board_setPin(DIGITAL, GREEN_LED_PIN, LOW);
+  board_setPin(DIGITAL, BLUE_LED_PIN, LOW);
+}

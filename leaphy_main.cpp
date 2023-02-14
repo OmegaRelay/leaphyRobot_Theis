@@ -50,7 +50,7 @@ void mainTask(void* pvParameters) {
             break;
 
           case TRACK_BOTH_BLACK:
-            notifyPurple();
+            notifyNone();
             movementStop();
             break;
 
@@ -70,12 +70,12 @@ void mainTask(void* pvParameters) {
         }
         break;
       case LEFT_GUIDANCE:
-        notifyYellow();
+        notifyPurple();
         movementTurn(MOVE_LEFT);
         break;
 
       case RIGHT_GUIDANCE:
-        notifyYellow();
+        notifyPurple();
         movementTurn(MOVE_RIGHT);
         break;
       default:
